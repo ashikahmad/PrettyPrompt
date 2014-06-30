@@ -140,11 +140,11 @@ function __show_banner {
   local filename=~/.bash_extra/.bash_banner
   if [ -f "$filename" ]
     then
-    local col=242
+    local col=234
 	  while IFS='' read -r line
     do
       printf "%s\n" "[38;5;${col}m${line}"
-      ((col++))
+      ((col+=2))
     done < "$filename"
 	  printf "%s" "[0m"
   fi
