@@ -1,0 +1,141 @@
+# ============== Promptline Utils ==============
+
+function __promptline_cwd {
+  local dir_limit="2"
+  local truncation="⋯"
+  local formatted_cwd=""
+  local dir_sep=" ⮁ "
+  local tilde="~"
+
+  local cwd="${PWD/#$HOME/$tilde}"
+  local first_char part_count=0
+
+  # get first char of the path, i.e. tilde or slash
+  [[ -n ${ZSH_VERSION-} ]] && first_char=$cwd[1,1] || first_char=${cwd::1}
+
+  # remove leading tilde
+  cwd="${cwd#\~}"
+
+  while [[ "$cwd" == */* && "$cwd" != "/" ]]; do
+    # pop off last part of cwd
+    local part="${cwd##*/}"
+    cwd="${cwd%/*}"
+
+    formatted_cwd="$dir_sep$part$formatted_cwd"
+    part_count=$((part_count+1))
+
+    [[ $part_count -eq $dir_limit ]] && first_char="$truncation" && break
+  done
+
+  printf "%s" "$first_char$formatted_cwd"
+}
+
+function __promptline_wrapper {
+  # wrap the text in $1 with $2 and $3, only if $1 is not empty
+  # $2 and $3 typically contain non-content-text, like color escape codes and separators
+
+  [[ -n "$1" ]] || return 1
+  printf "%s" "${2}${1}${3}"
+}
+
+# ============== GIT ==============
+
+# Usage: $(branch_color clean_repo_color dirty_repo_color)
+function branch_color {
+  local color=""
+  if git rev-parse --git-dir >/dev/null 2>&1
+    then
+    if git diff --quiet 2>/dev/null >&2 
+      then
+        color="$1" #$green
+      else
+        color="$2" #$red
+    fi
+  fi
+  printf "%s" "${color}"
+}
+
+function git_br {
+  local branch
+  local branch_symbol="⭠ "
+
+  if git rev-parse --git-dir >/dev/null 2>&1
+    then
+      branch=$(git branch 2>/dev/null| sed -n '/^\*/s/^\* //p')
+      printf "%s" "${branch_symbol}${branch}"
+      return
+  fi
+}
+
+# ============== PROMPT PRINTER ==============
+
+function __pretty_prompt {
+	local comps section_bg section_fg s_fg s_bg sep_fg slice_prefix slice_empty_prefix slice_joiner slice_suffix is_prompt_empty=1
+
+	local sec_split="##"
+ 
+  sections=( "\u" "$(__promptline_cwd)" "$(git_br)" )
+	section_bgs=( "74" "238" "$(branch_color 120 210)" )
+	section_fgs=( "195" "247" "$(branch_color 28 124)" )
+
+  printf "%s" "\n"
+
+  for index in ${!sections[*]}
+	do
+		section_bg=${section_bgs[$index]} section_fg=${section_fgs[$index]}
+		s_fg="${wrap}38;5;${section_fg}${end_wrap}" s_bg="${wrap}48;5;${section_bg}${end_wrap}" sep_fg="${wrap}38;5;${section_bg}${end_wrap}"
+		slice_prefix="${s_bg}${sep}${s_fg}${s_bg}${space}" slice_suffix="$space${sep_fg}" slice_joiner="${s_fg}${s_bg}${alt_sep}${space}" slice_empty_prefix="${s_fg}${s_bg}${space}"
+		[ $is_prompt_empty -eq 1 ] && slice_prefix="$slice_empty_prefix"
+
+    if [[ ${sections[$index]} == *${sec_split}* ]]
+    then
+      comps=(${sections[$index]//${sec_split}/ })
+    else
+      comps=( "${sections[$index]}" )
+    fi
+    for cindex in ${!comps[*]}
+    do
+		  __promptline_wrapper "${comps[$cindex]}" "$slice_prefix" "$slice_suffix" && { slice_prefix="$slice_joiner"; is_prompt_empty=0; }
+    done
+	done
+
+	# close sections
+  printf "%s" "${reset_bg}${sep}$reset$space"
+}
+
+# ============== START PROMPT ==============
+
+function __promptline {
+	local sep="⮀"
+	local alt_sep="⮁"
+  local space=" "
+  
+  local esc=$'[' end_esc=m
+  local noprint='\[' end_noprint='\]'
+  local wrap="$noprint$esc" end_wrap="$end_esc$end_noprint"
+  local reset="${wrap}0${end_wrap}"
+  local reset_bg="${wrap}49${end_wrap}"
+
+  PS1="$(__pretty_prompt)"
+}
+
+if [[ ! "$PROMPT_COMMAND" == *__promptline* ]]; then
+  PROMPT_COMMAND='__promptline;'$'\n'"$PROMPT_COMMAND"
+fi
+
+# ============== START BANNER ==============
+
+function __show_banner {
+  local filename=~/.bash_extra/.bash_banner
+  if [ -f "$filename" ]
+    then
+    local col=242
+	  while IFS='' read -r line
+    do
+      printf "%s\n" "[38;5;${col}m${line}"
+      ((col++))
+    done < "$filename"
+	  printf "%s" "[0m"
+  fi
+}
+__show_banner
