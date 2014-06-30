@@ -1,12 +1,8 @@
 # ============== Promptline Utils ==============
 
 function __promptline_cwd {
-  local dir_limit="2"
-  local truncation="⋯"
   local formatted_cwd=""
-  local dir_sep=" ⮁ "
-  local tilde="~"
-
+  
   local cwd="${PWD/#$HOME/$tilde}"
   local first_char part_count=0
 
@@ -57,8 +53,7 @@ function branch_color {
 
 function git_br {
   local branch
-  local branch_symbol="⭠ "
-
+  
   if git rev-parse --git-dir >/dev/null 2>&1
     then
       branch=$(git branch 2>/dev/null| sed -n '/^\*/s/^\* //p')
@@ -72,13 +67,7 @@ function git_br {
 function __pretty_prompt {
 	local comps section_bg section_fg s_fg s_bg sep_fg slice_prefix slice_empty_prefix slice_joiner slice_suffix is_prompt_empty=1
 
-	local sec_split="##"
- 
-  sections=( "\u" "$(__promptline_cwd)" "$(git_br)" )
-	section_bgs=( "74" "238" "$(branch_color 120 210)" )
-	section_fgs=( "195" "247" "$(branch_color 28 124)" )
-
-  printf "%s" "\n"
+	printf "%s" "\n"
 
   for index in ${!sections[*]}
 	do
@@ -106,10 +95,32 @@ function __pretty_prompt {
 # ============== START PROMPT ==============
 
 function __promptline {
-	local sep="⮀"
-	local alt_sep="⮁"
-  local space=" "
+
+	# -vvv----------[ Configurations ]------------vvv-
   
+  # common
+  local sep="⮀"
+	local alt_sep="⮁"
+
+  # for git
+  local branch_symbol="⭠ "
+
+  # for pretty path
+  local dir_limit="2"
+  local truncation="⋯"
+  local dir_sep=" ⮁ "
+  local tilde="~"
+
+  local sec_split="##"
+ 
+  # sections and their colors
+  local sections=( "\u" "$(__promptline_cwd)" "$(git_br)" )
+  local section_bgs=( "74" "238" "$(branch_color 120 210)" )
+  local section_fgs=( "195" "247" "$(branch_color 28 124)" )
+
+  # -^^^-------[ End of Configurations ]--------^^^-
+  
+  local space=" "
   local esc=$'[' end_esc=m
   local noprint='\[' end_noprint='\]'
   local wrap="$noprint$esc" end_wrap="$end_esc$end_noprint"
