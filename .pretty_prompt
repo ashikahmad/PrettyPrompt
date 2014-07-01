@@ -92,6 +92,19 @@ function __pretty_prompt {
   printf "%s" "${reset_bg}${sep}$reset$space"
 }
 
+function __pretty_prompt_PS2 {
+  local comps section_bg section_fg s_fg s_bg sep_fg slice_prefix slice_empty_prefix slice_joiner slice_suffix is_prompt_empty=1
+
+  section_bg=${section_bgs[0]} section_fg=${section_fgs[0]}
+    s_fg="${wrap}38;5;${section_fg}${end_wrap}" s_bg="${wrap}48;5;${section_bg}${end_wrap}" sep_fg="${wrap}38;5;${section_bg}${end_wrap}"
+    slice_prefix="${s_bg}${sep}${s_fg}${s_bg}${space}" slice_suffix="$space${sep_fg}" slice_joiner="${s_fg}${s_bg}${alt_sep}${space}" slice_empty_prefix="${s_fg}${s_bg}${space}"
+    [ $is_prompt_empty -eq 1 ] && slice_prefix="$slice_empty_prefix"
+    __promptline_wrapper "$1" "$slice_prefix" "$slice_suffix" && { slice_prefix="$slice_joiner"; is_prompt_empty=0; }
+    
+  # close sections
+  printf "%s" "${reset_bg}${sep}$reset$space"
+}
+
 # ============== START PROMPT ==============
 
 function __promptline {
@@ -101,6 +114,7 @@ function __promptline {
   # common
   local sep="⮀"
 	local alt_sep="⮁"
+  local ps2_symble="➥"
 
   # for git
   local branch_symbol="⭠ "
@@ -128,6 +142,7 @@ function __promptline {
   local reset_bg="${wrap}49${end_wrap}"
 
   PS1="$(__pretty_prompt)"
+  PS2="$(__pretty_prompt_PS2 ${ps2_symble})"
 }
 
 if [[ ! "$PROMPT_COMMAND" == *__promptline* ]]; then
