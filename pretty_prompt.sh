@@ -128,7 +128,7 @@ fi
 # ============== START BANNER ==============
 
 function __show_banner {
-  local filename=~/.bash_extra/.bash_banner
+  local filename=~/.bash_extra/bash_banner.txt
   if [ -f "$filename" ]
   then
     local col=234
