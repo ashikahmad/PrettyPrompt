@@ -10,7 +10,7 @@ It could be a question then why [PrettyPrompt] where there is already [promptlin
 
 ## Features
 
-*  Easy configurable section (and sub-section), you'll see what you want to (username|pretty-path|git-branch is set to show by default).
+*  Easy configurable sections (and sub-sections), you'll see only what you want to (username > pretty-path > [git-branch & git-status] is set to show by default).
 *  Show git branch with unstaged change indication by color (*green* for clean and *red* for changed by default).
 *  Design as you wish: 
     *  colors (background and foreground of sections)
@@ -25,8 +25,8 @@ It could be a question then why [PrettyPrompt] where there is already [promptlin
    `git clone git@github.com:ashikahmad/PrettyPrompt.git ~/.bash_extra`
 * Add this line to your .bash_profile/.bashrc:<br/>
    `[ -f ~/.bash_extra/pretty_prompt.sh ] && source ~/.bash_extra/pretty_prompt.sh`
-* Install patched font (The one provided may be sufficient). See more in section below if needed.
-* Reopen your terminal and see it's working!
+* Install patched font (the one provided may be sufficient). See more in section below if needed.
+* Re-open your terminal and see it's working!
 
 ## Configurations
 
