@@ -1,6 +1,8 @@
 # PrettyPrompt
 *Clean & stylish prompt for bash that will change your feel about using bash ever after.* 
 
+![Screen Shot](https://github.com/ashikahmad/PrettyPrompt/wiki/screen_shot.png)
+
 ## Where did it come from?
 Basically this idea of [PrettyPrompt] is brought to light based on the idea of vim's statusbar plugin [powerline] or [vim-powerline] (and later from [vim-airline]). Later I've *stolen* some code from another vim plugin [promptline] which does somewhat same thing in a different way.
 
