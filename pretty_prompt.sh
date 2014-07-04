@@ -127,17 +127,5 @@ fi
 
 # ============== START BANNER ==============
 
-function __show_banner {
-  local filename=~/.bash_extra/bash_banner.txt
-  if [ -f "$filename" ]
-  then
-    local col=234
-    while IFS='' read -r line
-    do
-      printf "%s\n" "[38;5;${col}m${line}"
-      ((col+=2))
-    done < "$filename"
-    printf "%s" "[0m"
-  fi
-}
-__show_banner
+source ~/.bash_extra/banner_utils.sh
+__show_gradient_banner 254 -2
