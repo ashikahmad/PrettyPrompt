@@ -38,6 +38,12 @@ function git_br {
   fi
 }
 
+# ============== PYTHON VIRTUAL ENVIRONMENT ==============
+
+function vir_env {
+  printf "%s" "${VIRTUAL_ENV##*/}"
+}
+
 # ============== PROMPT PRINTER ==============
 
 function __pretty_prompt {
@@ -104,9 +110,9 @@ function __promptline {
   local sec_split="##"
  
   # sections and their colors
-  local sections=( "\u" "$(__promptline_cwd)" "$(git_br)##$(__promptline_git_status)" )
-  local section_bgs=( "74" "238" "$(branch_color 120 210)" )
-  local section_fgs=( "195" "247" "$(branch_color 28 124)" )
+  local sections=( "\u" "$(__promptline_cwd)" "$(git_br)##$(__promptline_git_status)" "$(vir_env)" )
+  local section_bgs=( "74" "238" "$(branch_color 120 210)" "138")
+  local section_fgs=( "195" "247" "$(branch_color 28 124)" "255")
 
   # -^^^-------[ End of Configurations ]--------^^^-
   
